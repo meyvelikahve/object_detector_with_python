@@ -1,26 +1,31 @@
-import cv2
-import  matplotlib.pyplot as plt
+import cv2  # open cv küüphanesi import edilmiştir
 
+
+#gerçek zamanlı nesne algılama algoritmasını dışarıdan dosya olarak alıyoruz
 config_file = 'ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt'
 frozen_model = 'frozen_inference_graph.pb'
 
-model = cv2.dnn_DetectionModel(frozen_model, config_file)
+#open cv nin DNN modülü sayesinde görüntü algılama algoritmasını parametre olarak veriyoruz
+model = cv2.dnn_DetectionModel(frozen_model, config_file)  
 
+#boş bir liste oluşturuyoruz
 classLabels = []
-file_name = 'coco.names'    #f yerine fpt coco.txt
-with open(file_name, 'rt') as f:
-    classLabels = f.read().rstrip('\n').split('\n')
+
+#tespit ettiğimiz görüntüdeki nesne isimlerinin bulunduğu dosyayı tanımlıyoruz.
+file_name = 'coco.names'
+with open(file_name, 'rt') as f:                     # coco.names isimli dosyayı okumak içi açıyoruz
+    classLabels = f.read().rstrip('\n').split('\n')  # içerideki verileri uygun hale getirip listeye atıyoruz
 
 
-model.setInputSize(320, 320)
-model.setInputScale(1.0 / 127.5)
-model.setInputMean((127.5, 127.5, 127.5))
-model.setInputSwapRB(True)
+model.setInputSize(320, 320)                # giriş boyutunu sınırlandırıp ayarlıyoruz    
+model.setInputScale(1.0 / 127.5)            # çerçeve değerleri için çarpan
+model.setInputMean((127.5, 127.5, 127.5))   # kanallardan çıkarılan ortalama değerler
+model.setInputSwapRB(True)                  # ilk ve son kanalı değiştiren method
 
-cam = cv2.VideoCapture(1)
+cam = cv2.VideoCapture(1)                   # kameraya ulaşmamız için kullanılır
 
-if not cam.isOpened():
-    cam = cv2.VideoCapture(0)
+if not cam.isOpened():                      # kamera açıldıysa True değeri döndürür   
+    cam = cv2.VideoCapture(0)               # default kameramıza geri dönüyoruz
 if not cam.isOpened():
     raise IOError("Kamera açılamadı")
 
@@ -45,4 +50,3 @@ while True:
 
 cam.release()
 cv2.destroyAllWindows()
-
